@@ -9,9 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.dillonmccoy.nytimessearch.models.Article;
 import com.dillonmccoy.nytimessearch.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
 
         viewHolder.image.setImageResource(0);
         if (!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(getContext()).load(thumbnail).into(viewHolder.image);
+            Glide.with(getContext()).load(thumbnail).into(viewHolder.image);
 
         }
         return convertView;
