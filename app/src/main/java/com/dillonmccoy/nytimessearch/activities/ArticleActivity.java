@@ -26,7 +26,7 @@ public class ArticleActivity extends AppCompatActivity {
 
         wvArticle = (WebView) findViewById(R.id.wvArticle);
 
-        Article article = (Article) Parcels.unwrap(getIntent().getParcelableExtra("article"));
+        Article article = Parcels.unwrap(getIntent().getParcelableExtra("article"));
 
         toolbar.setTitle(article.getHeadline());
 

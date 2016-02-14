@@ -6,19 +6,18 @@ import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ListView;
 
-import com.dillonmccoy.nytimessearch.listeners.EndlessScrollListener;
-import com.dillonmccoy.nytimessearch.models.Article;
 import com.dillonmccoy.nytimessearch.R;
 import com.dillonmccoy.nytimessearch.adapters.ArticleArrayAdapter;
+import com.dillonmccoy.nytimessearch.listeners.EndlessScrollListener;
+import com.dillonmccoy.nytimessearch.models.Article;
 import com.dillonmccoy.nytimessearch.models.Settings;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -52,6 +51,7 @@ public class SearchActivity extends AppCompatActivity {
     static final int SAVE_SETTINGS_RESULT = 1;
     static final int CANCEL_SETTINGS_RESULT = 2;
     static final String SETTINGS_EXTRA = "settings";
+    private static final int FIRST_PAGE = 0;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
@@ -130,26 +130,25 @@ public class SearchActivity extends AppCompatActivity {
         startActivityForResult(i, SETTINGS_REQUEST);
     }
 
+    // Callback for the search button. Start with the first page.
     public void onArticleSearch(View view) {
-        searchForArticles(0);
+        searchForArticles(FIRST_PAGE);
     }
 
     private void searchForArticles(final int page) {
-        String query = etQuery.getText().toString();
 
+        // Construct the request params.
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
-
         params.put("page", page);
-        params.put("q", query);
+        params.put("q", etQuery.getText().toString());
 
+        // Figure out the begin_date param.
         if (settings.beginDate != null) {
-//            params.put("begin_date", Integer.toString(settings.beginYear) +
-//                    Integer.toString(settings.beginMonth) +
-//                    Integer.toString(settings.beginDate));
             params.put("begin_date", dateFormat.format(settings.beginDate));
         }
 
+        // Figure out the sort param.
         String SORT_PARAM = "sort";
         switch (settings.sortOrder) {
             case Settings.SORT_NEWEST:
@@ -161,10 +160,33 @@ public class SearchActivity extends AppCompatActivity {
             default:
                 break;
         }
+
+        // Figure out the news desk values string.
+        ArrayList<String> newsDeskValues = new ArrayList<>();
+        if (settings.showArt) {
+            newsDeskValues.add(getString(R.string.artsTxt));
+        }
+        if (settings.showFashion) {
+            newsDeskValues.add(getString(R.string.fashionTxt));
+        }
+        if (settings.showSports) {
+            newsDeskValues.add(getString(R.string.sportsTxt));
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("news_desk:(");
+        for (String value : newsDeskValues) {
+            builder.append("\"" + value + "\" ");
+        }
+        builder.append(")");
+        if (!newsDeskValues.isEmpty()) {
+            params.add("fq", builder.toString());
+        }
+
         Log.e(TAG, "SEARCHING FOR ARTICLES: " + params.toString());
 
+        // Actually make the json request.
         AsyncHttpClient client = new AsyncHttpClient();
-
         client.get(API_BASE, params, new JsonHttpResponseHandler() {
 
             @Override
@@ -191,8 +213,6 @@ public class SearchActivity extends AppCompatActivity {
                 Log.e(TAG, errorResponse.toString());
             }
         });
-
-
     }
 
     @Override
@@ -208,7 +228,7 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
 
-        settings = (Settings) Parcels.unwrap(settingsParcel);
-        searchForArticles(0);
+        settings = Parcels.unwrap(settingsParcel);
+        searchForArticles(FIRST_PAGE);
     }
 }

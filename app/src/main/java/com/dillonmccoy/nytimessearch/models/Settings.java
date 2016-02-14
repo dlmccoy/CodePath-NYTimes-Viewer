@@ -14,9 +14,10 @@ public class Settings {
     public int sortOrder;
 
     public Date beginDate;
-//    public int beginYear;
-//    public int beginMonth;
-//    public int beginDate;
+
+    public boolean showArt = false;
+    public boolean showFashion = false;
+    public boolean showSports = false;
 
     public Settings() {}
 }

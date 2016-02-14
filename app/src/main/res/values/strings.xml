@@ -13,4 +13,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dateButtonTxt">Select Date</string>
+    <string name="sportsTxt">Sports</string>
+    <string name="fashionTxt"><![CDATA[Fashion & Style]]></string>
+    <string name="artsTxt">Arts</string>
 </resources>

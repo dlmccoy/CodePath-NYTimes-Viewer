@@ -34,9 +34,10 @@
         android:layout_marginStart="61dp" />
 
     <Button
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change"
+        android:text="@string/dateButtonTxt"
         android:id="@+id/bOpenDatePicker"
         android:onClick="showDatePickerDialog"
         android:layout_alignParentTop="true"
@@ -72,7 +73,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Arts"
+        android:text="@string/artsTxt"
         android:id="@+id/cbArts"
         android:layout_below="@+id/sSortOrder"
         android:layout_alignLeft="@+id/sSortOrder"
@@ -82,7 +83,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fashion &amp; Style"
+        android:text="@string/fashionTxt"
         android:id="@+id/cbFashion"
         android:layout_below="@+id/cbArts"
         android:layout_alignLeft="@+id/cbArts"
@@ -92,7 +93,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sports"
+        android:text="@string/sportsTxt"
         android:id="@+id/cbSports"
         android:layout_below="@+id/cbFashion"
         android:layout_alignLeft="@+id/cbFashion"
@@ -108,5 +109,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
 
 </RelativeLayout>
