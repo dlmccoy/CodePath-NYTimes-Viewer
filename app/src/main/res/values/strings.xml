@@ -4,5 +4,13 @@
     <string name="queryHint">Enter search query</string>
     <string name="buttonTextSearch">Search</string>
     <string name="title_activity_article">NYTimes Search</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings">Search Settings</string>
+    <string-array name="sort_options">
+        <item>Relevance</item>
+        <item>Newest</item>
+        <item>Oldest</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

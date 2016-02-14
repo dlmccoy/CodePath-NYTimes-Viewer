@@ -12,4 +12,101 @@
     tools:context="com.dillonmccoy.nytimessearch.activities.SettingsActivity"
     tools:showIn="@layout/activity_settings">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Begin Date:"
+        android:id="@+id/tvBeginDate"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:id="@+id/tvSelectedDate"
+        android:layout_alignTop="@+id/tvBeginDate"
+        android:layout_alignBottom="@+id/tvBeginDate"
+        android:layout_toRightOf="@+id/tvBeginDate"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="61dp"
+        android:layout_marginStart="61dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change"
+        android:id="@+id/bOpenDatePicker"
+        android:onClick="showDatePickerDialog"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort Order:"
+        android:id="@+id/tvSortOrder"
+        android:layout_below="@+id/bOpenDatePicker"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sSortOrder"
+        android:layout_below="@+id/bOpenDatePicker"
+        android:layout_alignLeft="@+id/tvSelectedDate"
+        android:layout_alignStart="@+id/tvSelectedDate" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="News Desk Values:"
+        android:id="@+id/tvNewsDeskValues"
+        android:layout_below="@+id/sSortOrder"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arts"
+        android:id="@+id/cbArts"
+        android:layout_below="@+id/sSortOrder"
+        android:layout_alignLeft="@+id/sSortOrder"
+        android:layout_alignStart="@+id/sSortOrder"
+        android:checked="false" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fashion &amp; Style"
+        android:id="@+id/cbFashion"
+        android:layout_below="@+id/cbArts"
+        android:layout_alignLeft="@+id/cbArts"
+        android:layout_alignStart="@+id/cbArts"
+        android:checked="false" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sports"
+        android:id="@+id/cbSports"
+        android:layout_below="@+id/cbFashion"
+        android:layout_alignLeft="@+id/cbFashion"
+        android:layout_alignStart="@+id/cbFashion"
+        android:checked="false" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/bSave"
+        android:onClick="onSettingsSave"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

@@ -2,6 +2,7 @@ package com.dillonmccoy.nytimessearch.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,11 +13,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.dillonmccoy.nytimessearch.models.Article;
 import com.dillonmccoy.nytimessearch.R;
 import com.dillonmccoy.nytimessearch.adapters.ArticleArrayAdapter;
+import com.dillonmccoy.nytimessearch.models.Settings;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -26,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
@@ -36,11 +38,19 @@ public class SearchActivity extends AppCompatActivity {
     private GridView gvResults;
     private Button bSearch;
     private ArticleArrayAdapter aArticles;
+    private Settings settings;
 
-    ArrayList<Article> articles;
+    private ArrayList<Article> articles;
 
     private static final String API_BASE = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
     private static final String API_KEY = "749c0209def6af2f429675d14232454a:5:74407211";
+    static final int SETTINGS_REQUEST = 0;
+    static final int SAVE_SETTINGS_RESULT = 1;
+    static final int CANCEL_SETTINGS_RESULT = 2;
+    static final String SETTINGS_EXTRA = "settings";
+
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +66,8 @@ public class SearchActivity extends AppCompatActivity {
         articles = new ArrayList<>();
         aArticles = new ArticleArrayAdapter(this, articles);
         gvResults.setAdapter(aArticles);
+
+        settings = new Settings();
 
         gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -89,28 +101,55 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            switchToSettingsActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void switchToSettingsActivity() {
+        Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
+        i.putExtra(SETTINGS_EXTRA, Parcels.wrap(settings));
+
+        startActivityForResult(i, SETTINGS_REQUEST);
+    }
+
     public void onArticleSearch(View view) {
+        searchForArticles();
+    }
+
+    private void searchForArticles() {
         String query = etQuery.getText().toString();
-
-        Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_LONG).show();
-
-
-        String url = API_BASE;
 
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
         params.put("page", 0);
         params.put("q", query);
 
+        if (settings.beginDate != null) {
+//            params.put("begin_date", Integer.toString(settings.beginYear) +
+//                    Integer.toString(settings.beginMonth) +
+//                    Integer.toString(settings.beginDate));
+            params.put("begin_date", dateFormat.format(settings.beginDate));
+        }
+
+        String SORT_PARAM = "sort";
+        switch (settings.sortOrder) {
+            case Settings.SORT_NEWEST:
+                params.put(SORT_PARAM, "newest");
+                break;
+            case Settings.SORT_OLDEST:
+                params.put(SORT_PARAM, "oldest");
+                break;
+            default:
+                break;
+        }
+        Log.e("ASDF", "SEARCHING FOR ARTICLES: " + params.toString());
+
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.get(url, params, new JsonHttpResponseHandler() {
+        client.get(API_BASE, params, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -136,5 +175,22 @@ public class SearchActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode != SAVE_SETTINGS_RESULT) {
+            return;
+        }
+        Parcelable settingsParcel = data.getParcelableExtra(SETTINGS_EXTRA);
+
+        // Only attempt to unwrap the parcelable if a result was returned.
+        if (settingsParcel == null) {
+            return;
+        }
+
+        settings = (Settings) Parcels.unwrap(settingsParcel);
+        searchForArticles();
     }
 }

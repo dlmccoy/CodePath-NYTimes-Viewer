@@ -40,6 +40,7 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
 
         String thumbnail = article.getThumbnail();
 
+        viewHolder.image.setImageResource(0);
         if (!TextUtils.isEmpty(thumbnail)) {
             Picasso.with(getContext()).load(thumbnail).into(viewHolder.image);
 
