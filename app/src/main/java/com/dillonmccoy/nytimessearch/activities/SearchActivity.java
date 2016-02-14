@@ -13,7 +13,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ListView;
 
+import com.dillonmccoy.nytimessearch.listeners.EndlessScrollListener;
 import com.dillonmccoy.nytimessearch.models.Article;
 import com.dillonmccoy.nytimessearch.R;
 import com.dillonmccoy.nytimessearch.adapters.ArticleArrayAdapter;
@@ -33,6 +35,8 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
+
+    private static final String TAG = "SearchActivity";
 
     private EditText etQuery;
     private GridView gvResults;
@@ -83,6 +87,17 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                searchForArticles(page);
+                // or customLoadMoreDataFromApi(totalItemsCount);
+                return true; // ONLY if more data is actually being loaded; false otherwise.
+            }
+        });
     }
 
     @Override
@@ -116,15 +131,16 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void onArticleSearch(View view) {
-        searchForArticles();
+        searchForArticles(0);
     }
 
-    private void searchForArticles() {
+    private void searchForArticles(final int page) {
         String query = etQuery.getText().toString();
 
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
-        params.put("page", 0);
+
+        params.put("page", page);
         params.put("q", query);
 
         if (settings.beginDate != null) {
@@ -145,7 +161,7 @@ public class SearchActivity extends AppCompatActivity {
             default:
                 break;
         }
-        Log.e("ASDF", "SEARCHING FOR ARTICLES: " + params.toString());
+        Log.e(TAG, "SEARCHING FOR ARTICLES: " + params.toString());
 
         AsyncHttpClient client = new AsyncHttpClient();
 
@@ -153,24 +169,26 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", "response: " + response.toString());
+                Log.d(TAG, "response: " + response.toString());
 
                 JSONArray docs = null;
 
-                aArticles.clear();
+                if (page == 0) {
+                    aArticles.clear();
+                }
                 try {
                     docs = response.getJSONObject("response").getJSONArray("docs");
 
                     aArticles.addAll(Article.getFromJSONArray(docs));
 
                 } catch (JSONException e) {
-                    Log.e("ERROR", e.toString());
+                    Log.e(TAG, e.toString());
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ERROR", errorResponse.toString());
+                Log.e(TAG, errorResponse.toString());
             }
         });
 
@@ -191,6 +209,6 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         settings = (Settings) Parcels.unwrap(settingsParcel);
-        searchForArticles();
+        searchForArticles(0);
     }
 }
